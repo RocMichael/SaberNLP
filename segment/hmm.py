@@ -53,6 +53,8 @@ class HMMSegger:
         self.emit_mat = {}  # emit_mat[status][observe] = prob
         self.init_vec = {}  # init_vec[status] = prob
         self.state_count = {}  # state_count[status] = prob
+        self.word_set = set()
+        self.line_num = 0
         self.data = None
 
     def setup(self):
@@ -67,6 +69,8 @@ class HMMSegger:
             self.init_vec[state] = 0
             # build state_count
             self.state_count[state] = 0
+        self.word_set = set()
+        self.line_num = 0
 
     def load_data(self, filename):
         self.data = file(data_path(filename))
@@ -79,6 +83,7 @@ class HMMSegger:
             "trans_mat": self.trans_mat,
             "emit_mat": self.emit_mat,
             "init_vec": self.init_vec,
+            "state_count": self.state_count
         }
         if code == "json":
             txt = json.dumps(data)
@@ -96,17 +101,16 @@ class HMMSegger:
         self.trans_mat = model["trans_mat"]
         self.emit_mat = model["emit_mat"]
         self.init_vec = model["init_vec"]
+        self.state_count = model["state_count"]
 
     def train(self):
-        line_num = 0
-        word_set = set()
         for line in self.data:
             # pre processing
             line = line.strip()
             if not line:
                 continue
             line = line.decode("utf-8", "ignore")
-            line_num += 1
+            self.line_num += 1
 
             # update word_set
             word_list = []
@@ -114,7 +118,7 @@ class HMMSegger:
                 if line[i] == " ":
                     continue
                 word_list.append(line[i])
-            word_set = word_set | set(word_list)
+            self.word_set = self.word_set | set(word_list)
 
             # get tags
             arr = line.split(" ")  # spilt word by whitespace
@@ -134,26 +138,33 @@ class HMMSegger:
                         self.emit_mat[line_tags[i]][word_list[i]] = 0.0
                     else:
                         self.emit_mat[line_tags[i]][word_list[i]] += 1
+
+    def get_prob(self):
+        init_vec = {}
+        trans_mat = {}
+        emit_mat = {}
         # convert init_vec to prob
         for key in self.init_vec:
-            self.init_vec[key] *= 1.0  # convert to float
-            self.init_vec[key] /= self.state_count[key]
+            init_vec[key] = float(self.init_vec[key]) / self.state_count[key]
         # convert trans_mat to prob
         for key1 in self.trans_mat:
+            trans_mat[key1] = {}
             for key2 in self.trans_mat[key1]:
-                self.trans_mat[key1][key2] *= 1.0  # convert to float
-                self.trans_mat[key1][key2] /= self.state_count[key1]
+                trans_mat[key1][key2] = float(self.trans_mat[key1][key2]) / self.state_count[key1]
         # convert emit_mat to prob
         for key1 in self.emit_mat:
+            emit_mat[key1] = {}
             for key2 in self.emit_mat[key1]:
-                self.emit_mat[key1][key2] /= self.state_count[key1]
+                emit_mat[key1][key2] = float(self.emit_mat[key1][key2]) / self.state_count[key1]
+        return init_vec, trans_mat, emit_mat
 
     def predict(self, sentence):
         tab = [{}]
         path = {}
+        init_vec, trans_mat, emit_mat = self.get_prob()
         # init
         for y in STATES:
-            tab[0][y] = self.init_vec[y] * self.emit_mat[y].get(sentence[0], 0)
+            tab[0][y] = init_vec[y] * emit_mat[y].get(sentence[0], 0)
             path[y] = [y]
         # build dynamic search table
         for t in range(1, len(sentence)):
@@ -163,7 +174,7 @@ class HMMSegger:
                 items = []
                 for y0 in STATES:
                     if tab[t - 1][y0] > 0:
-                        prob = tab[t - 1][y0] * self.trans_mat[y0].get(y, 0) * self.emit_mat[y].get(sentence[t], 0)
+                        prob = tab[t - 1][y0] * trans_mat[y0].get(y, 0) * emit_mat[y].get(sentence[t], 0)
                         items.append((prob, y0))
                 (prob, state) = max(items)
                 tab[t][y] = prob
@@ -179,8 +190,8 @@ class HMMSegger:
 
     def test(self):
         cases = [
-            # u"长春市长春节讲话",
-            # u"我们去野生动物园玩",
+            u"长春市长春节讲话",
+            u"我们去野生动物园玩",
             u"我只是做了一些微小的工作",
         ]
         for case in cases:
