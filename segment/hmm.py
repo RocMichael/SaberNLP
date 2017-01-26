@@ -166,25 +166,25 @@ class HMMSegger:
         path = {}
         init_vec, trans_mat, emit_mat = self.get_prob()
         # init
-        for y in STATES:
-            tab[0][y] = init_vec[y] * emit_mat[y].get(sentence[0], 0)
-            path[y] = [y]
+        for state in STATES:
+            tab[0][state] = init_vec[state] * emit_mat[state].get(sentence[0], 0)
+            path[state] = [state]
         # build dynamic search table
         for t in range(1, len(sentence)):
             tab.append({})
             new_path = {}
-            for y in STATES:
+            for state1 in STATES:
                 items = []
-                for y0 in STATES:
-                    if tab[t - 1][y0] > 0:
-                        prob = tab[t - 1][y0] * trans_mat[y0].get(y, 0) * emit_mat[y].get(sentence[t], 0)
-                        items.append((prob, y0))
+                for state2 in STATES:
+                    if tab[t - 1][state2] > 0:
+                        prob = tab[t - 1][state2] * trans_mat[state2].get(state1, 0) * emit_mat[state1].get(sentence[t], 0)
+                        items.append((prob, state2))
                 (prob, state) = max(items)
-                tab[t][y] = prob
-                new_path[y] = path[state] + [y]
+                tab[t][state1] = prob
+                new_path[state1] = path[state] + [state1]
             path = new_path
         # search best path
-        prob, state = max([(tab[len(sentence) - 1][y], y) for y in STATES])
+        prob, state = max([(tab[len(sentence) - 1][state], state) for state in STATES])
         return path[state]
 
     def cut(self, sentence):
@@ -203,9 +203,10 @@ class HMMSegger:
 
 if __name__ == '__main__':
     segger = HMMSegger()
-    segger.load_data("people_daily.txt")
-    segger.train()
-    segger.save()
+    # segger.load_data("people_daily.txt")
+    # segger.train()
+    # segger.save()
     segger.load()
     segger.test()
+
 
