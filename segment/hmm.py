@@ -1,5 +1,6 @@
 # encoding=utf-8
 from config import data_path
+from stop_words import  stop_words
 
 import pickle
 import json
@@ -76,7 +77,7 @@ class HMMSegger:
         self.data = file(data_path(filename))
         self.setup()
 
-    def save(self, filename="hmm.model", code="json"):
+    def save(self, filename="hmm.json", code="json"):
         filename = data_path(filename)
         fw = open(filename, 'wb')
         data = {
@@ -91,7 +92,7 @@ class HMMSegger:
         elif code == "pickle":
             pickle.dump(data, fw)
 
-    def load(self, filename="hmm.model", code="json"):
+    def load(self, filename="hmm.json", code="json"):
         filename = data_path(filename)
         fr = open(filename, 'rb')
         if code == "json":
@@ -121,10 +122,12 @@ class HMMSegger:
             self.word_set = self.word_set | set(word_list)
 
             # get tags
-            arr = line.split(" ")  # spilt word by whitespace
+            words = line.split(" ")  # spilt word by whitespace
             line_tags = []
-            for item in arr:
-                line_tags.extend(get_tags(item))
+            for word in words:
+                if word in stop_words:
+                    continue
+                line_tags.extend(get_tags(word))
 
             # update model params
             for i in range(len(line_tags)):
@@ -200,8 +203,9 @@ class HMMSegger:
 
 if __name__ == '__main__':
     segger = HMMSegger()
-    # segger.load_data("people_daily.txt")
-    # segger.train()
-    # segger.save()
+    segger.load_data("people_daily.txt")
+    segger.train()
+    segger.save()
     segger.load()
     segger.test()
+
