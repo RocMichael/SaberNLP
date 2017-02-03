@@ -50,11 +50,12 @@ def cut_sent(src, tags):
 
 class HMMSegger:
     def __init__(self):
-        self.trans_mat = {}  # trans_mat[status][status] = prob
-        self.emit_mat = {}  # emit_mat[status][observe] = prob
-        self.init_vec = {}  # init_vec[status] = prob
-        self.state_count = {}  # state_count[status] = prob
+        self.trans_mat = {}  # trans_mat[status][status] = int
+        self.emit_mat = {}  # emit_mat[status][observe] = int
+        self.init_vec = {}  # init_vec[status] = int
+        self.state_count = {}  # state_count[status] = int
         self.word_set = set()
+        self.inited = False
         self.line_num = 0
         self.data = None
 
@@ -72,10 +73,10 @@ class HMMSegger:
             self.state_count[state] = 0
         self.word_set = set()
         self.line_num = 0
+        self.inited = True
 
     def load_data(self, filename):
         self.data = file(data_path(filename))
-        self.setup()
 
     def save(self, filename="hmm.json", code="json"):
         filename = data_path(filename)
@@ -103,8 +104,11 @@ class HMMSegger:
         self.emit_mat = model["emit_mat"]
         self.init_vec = model["init_vec"]
         self.state_count = model["state_count"]
+        self.inited = True
 
     def train(self):
+        if not self.inited:
+            self.setup()
         for line in self.data:
             # pre processing
             line = line.strip()
@@ -165,10 +169,12 @@ class HMMSegger:
         tab = [{}]
         path = {}
         init_vec, trans_mat, emit_mat = self.get_prob()
+
         # init
         for state in STATES:
             tab[0][state] = init_vec[state] * emit_mat[state].get(sentence[0], 0)
             path[state] = [state]
+
         # build dynamic search table
         for t in range(1, len(sentence)):
             tab.append({})
@@ -183,23 +189,31 @@ class HMMSegger:
                 tab[t][state1] = prob
                 new_path[state1] = path[state] + [state1]
             path = new_path
+
         # search best path
         prob, state = max([(tab[len(sentence) - 1][state], state) for state in STATES])
         return path[state]
 
     def cut(self, sentence):
+        if not (type(sentence) is unicode):
+            try:
+                sentence = sentence.decode('utf-8')
+            except:
+                sentence = sentence.decode('gbk', 'ignore')
         tags = self.predict(sentence)
         return cut_sent(sentence, tags)
 
     def test(self):
         cases = [
-            u"长春市长春节讲话",
-            u"我们去野生动物园玩",
-            u"我只是做了一些微小的工作",
+            "长春市长春节讲话",
+            "我们去野生动物园玩",
+            "我只是做了一些微小的工作",
         ]
         for case in cases:
             result = self.cut(case)
-            print(result)
+            for word in result:
+                print(word)
+            print('')
 
 if __name__ == '__main__':
     segger = HMMSegger()
@@ -208,5 +222,4 @@ if __name__ == '__main__':
     # segger.save()
     segger.load()
     segger.test()
-
 
