@@ -1,16 +1,9 @@
 # encoding=utf-8
 from config import data_path
-from stop_words import  stop_words
+from stop_words import stop_words
 
 import pickle
 import json
-
-
-def decode(txt):
-    try:
-        return txt.decode('utf-8')
-    except:
-        return txt.decode('gbk', 'ignore')
 
 
 class DAGSegger:
@@ -22,7 +15,6 @@ class DAGSegger:
         self.data = file(data_path(filename))
 
     def setup(self):
-
         # build word_dict
         for line in self.data:
             words = line.split(" ")
@@ -97,7 +89,7 @@ class DAGSegger:
         dag = self.build_dag(sentence)
 
         # dynamic search
-        for i in range(Len):
+        for i in range(Len-1, -1, -1):
             candidates = []
             for x in dag[i]:
                 word_count = self.word_dict.get(sentence[i:x], 0)
@@ -129,6 +121,7 @@ class DAGSegger:
             "长春市长春节讲话",
             "我们去野生动物园玩",
             "我只是做了一些微小的工作",
+            "国庆节我在研究中文分词"
         ]
         for case in cases:
             result = self.cut(case)
