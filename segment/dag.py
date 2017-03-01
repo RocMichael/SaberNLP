@@ -1,6 +1,7 @@
 # encoding=utf-8
 from config import data_path
 from stop_words import stop_words
+from utils import my_decode
 
 import pickle
 import json
@@ -14,7 +15,7 @@ class DAGSegger:
     def load_data(self, filename):
         self.data = file(data_path(filename))
 
-    def setup(self):
+    def update(self):
         # build word_dict
         for line in self.data:
             words = line.split(" ")
@@ -42,7 +43,7 @@ class DAGSegger:
         if code == 'txt':
             for key in self.word_dict:
                 tmp = "%s %d\n" % (key, self.word_dict[key])
-                fw.write(tmp)
+                fw.write(tmp.encode("utf-8"))
 
     def load(self, filename="words.txt", code="txt"):
         filename = data_path(filename)
@@ -57,6 +58,7 @@ class DAGSegger:
         elif code == 'txt':
             word_dict = {}
             for line in fr:
+                line = line.decode("utf-8")
                 tmp = line.split(" ")
                 if len(tmp) < 2:
                     continue
@@ -66,7 +68,7 @@ class DAGSegger:
         # update word dict
         word_dict = model["word_dict"]
         for key in word_dict:
-            key2 = key.decode("utf-8")  # to unicode
+            key2 = key  # to unicode
             if self.word_dict.get(key):
                 self.word_dict[key2] += word_dict[key]
             else:
@@ -105,7 +107,7 @@ class DAGSegger:
         return route
 
     def cut(self, sentence):
-        sentence = sentence.decode("utf-8")
+        sentence = my_decode(sentence)
         route = self.predict(sentence)
         next = 0
         word_list = []
@@ -118,6 +120,7 @@ class DAGSegger:
 
     def test(self):
         cases = [
+            "我来到北京清华大学",
             "长春市长春节讲话",
             "我们去野生动物园玩",
             "我只是做了一些微小的工作",
@@ -134,5 +137,5 @@ if __name__ == '__main__':
     s = DAGSegger()
     # s.load_data("people_daily.txt")
     # s.setup()
-    s.load()
+    s.load("dict.txt")
     s.test()

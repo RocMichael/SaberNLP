@@ -1,6 +1,7 @@
 # encoding=utf-8
 from config import data_path
 from stop_words import  stop_words
+from utils import my_decode
 
 import pickle
 import json
@@ -114,7 +115,7 @@ class HMMSegger:
             line = line.strip()
             if not line:
                 continue
-            line = line.decode("utf-8", "ignore")
+            line = my_decode(line)
             self.line_num += 1
 
             # update word_set
@@ -195,11 +196,7 @@ class HMMSegger:
         return path[state]
 
     def cut(self, sentence):
-        if not (type(sentence) is unicode):
-            try:
-                sentence = sentence.decode('utf-8')
-            except:
-                sentence = sentence.decode('gbk', 'ignore')
+        sentence = my_decode(sentence)
         tags = self.predict(sentence)
         return cut_sent(sentence, tags)
 
