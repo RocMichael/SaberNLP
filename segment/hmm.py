@@ -1,7 +1,7 @@
 # encoding=utf-8
 from config import data_path
-from stop_words import  stop_words
-from utils import my_decode
+from stop_words import stop_words
+
 
 import pickle
 import json
@@ -77,11 +77,11 @@ class HMMSegger:
         self.inited = True
 
     def load_data(self, filename):
-        self.data = file(data_path(filename))
+        self.data = open(data_path(filename), 'r', encoding="utf-8")
 
     def save(self, filename="hmm.json", code="json"):
         filename = data_path(filename)
-        fw = open(filename, 'wb')
+        fw = open(filename, 'w')
         data = {
             "trans_mat": self.trans_mat,
             "emit_mat": self.emit_mat,
@@ -96,9 +96,10 @@ class HMMSegger:
 
     def load(self, filename="hmm.json", code="json"):
         filename = data_path(filename)
-        fr = open(filename, 'rb')
+        fr = open(filename, 'r')
         if code == "json":
-            model = json.loads(fr.read())
+            txt = fr.read()
+            model = json.loads(txt)
         elif code == "pickle":
             model = pickle.load(fr)
         self.trans_mat = model["trans_mat"]
@@ -115,7 +116,6 @@ class HMMSegger:
             line = line.strip()
             if not line:
                 continue
-            line = my_decode(line)
             self.line_num += 1
 
             # update word_set
@@ -196,7 +196,6 @@ class HMMSegger:
         return path[state]
 
     def cut(self, sentence):
-        sentence = my_decode(sentence)
         tags = self.predict(sentence)
         return cut_sent(sentence, tags)
 

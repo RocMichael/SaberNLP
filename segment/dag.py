@@ -1,7 +1,6 @@
 # encoding=utf-8
 from config import data_path
 from stop_words import stop_words
-from utils import my_decode
 
 import pickle
 import json
@@ -13,7 +12,7 @@ class DAGSegger:
         self.data = None
 
     def load_data(self, filename):
-        self.data = file(data_path(filename))
+        self.data = open(data_path(filename), "r", encoding="utf-8")
 
     def update(self):
         # build word_dict
@@ -29,7 +28,7 @@ class DAGSegger:
 
     def save(self, filename="words.txt", code="txt"):
         filename = data_path(filename)
-        fw = open(filename, 'wb')
+        fw = open(filename, 'w', encoding="utf-8")
         data = {
             "word_dict": self.word_dict
         }
@@ -43,7 +42,7 @@ class DAGSegger:
         if code == 'txt':
             for key in self.word_dict:
                 tmp = "%s %d\n" % (key, self.word_dict[key])
-                fw.write(tmp.encode("utf-8"))
+                fw.write(tmp)
 
     def load(self, filename="words.txt", code="txt"):
         filename = data_path(filename)
@@ -107,7 +106,6 @@ class DAGSegger:
         return route
 
     def cut(self, sentence):
-        sentence = my_decode(sentence)
         route = self.predict(sentence)
         next = 0
         word_list = []
@@ -135,7 +133,8 @@ class DAGSegger:
 
 if __name__ == '__main__':
     s = DAGSegger()
-    # s.load_data("people_daily.txt")
-    # s.setup()
-    s.load("dict.txt")
+    # s.load_data("trisolars.txt")
+    # s.update()
+    # s.save("trisolars.words.txt")
+    s.load()
     s.test()

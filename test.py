@@ -12,7 +12,7 @@ def test():
         "比起生存还是死亡来忠诚与背叛可能更是一个问题"
     ]
     for case in cases:
-        result = hmm_cut(case)
+        result = dict_cut(case)
         for word in result:
             print(word)
         print('')

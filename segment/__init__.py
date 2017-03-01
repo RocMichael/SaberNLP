@@ -2,7 +2,6 @@
 from segment.dag import DAGSegger
 from segment.hmm import HMMSegger
 
-from utils import my_decode
 
 dag_segger = DAGSegger()
 hmm_segger = HMMSegger()
@@ -29,7 +28,6 @@ def __merge(seq):
 
 
 def joint_cut(sentence):
-    sentence = my_decode(sentence)
     final_list = []
     word_list = dag_segger.cut(sentence)
 
@@ -54,12 +52,10 @@ def joint_cut(sentence):
 
 
 def dict_cut(sentence):
-    sentence = my_decode(sentence)
     return dag_segger.cut(sentence)
 
 
 def hmm_cut(sentence):
-    sentence = my_decode(sentence)
     return hmm_segger.cut(sentence)
 
 cut = joint_cut
