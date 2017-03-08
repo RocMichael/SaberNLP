@@ -76,33 +76,24 @@ class DAGSegger:
     def build_dag(self, sentence):
         dag = {}
         for start in range(len(sentence)):
-            tmp = [start + 1]
+            unique = [start + 1]
+            tmp = [(start + 1, 1)]
             for stop in range(start+1, len(sentence)+1):
                 fragment = sentence[start:stop]
-                if (fragment in self.word_dict.keys()) and (stop not in tmp):
-                    tmp.append(stop)
+                num = self.word_dict.get(fragment, 0)
+                if num > 0 and (stop not in unique):
+                    tmp.append((stop, num))
+                    unique.append(stop)
             dag[start] = tmp
         return dag
 
     def predict(self, sentence):
         Len = len(sentence)
-        route = [(0, 0)] * Len
-        dag = self.build_dag(sentence)
+        route = [0] * Len
+        dag = self.build_dag(sentence)  # {i: (stop, num)}
 
-        # dynamic search
-        for i in range(Len-1, -1, -1):
-            candidates = []
-            for x in dag[i]:
-                word_count = self.word_dict.get(sentence[i:x], 0)
-                candidates.append((x, word_count))
-            # get max
-            max_count = -1
-            max_item = None
-            for item in candidates:
-                if item[1] > max_count:
-                    max_count = item[1]
-                    max_item = item
-            route[i] = max_item[0]
+        for i in range(0, Len):
+            route[i] = max(dag[i], key=lambda x: x[1])[0]
         return route
 
     def cut(self, sentence):
