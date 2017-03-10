@@ -27,8 +27,16 @@ def cut_sent(src, tags):
     word_list = []
     start = -1
     started = False
+
     if len(tags) != len(src):
         return None
+
+    if tags[-1] not in {'S', 'E'}:
+        if tags[-2] in {'S', 'E'}:
+            tags[-1] = 'S'  # for tags: r".*(S|E)(B|M)"
+        else:
+            tags[-1] = 'E'  # for tags: r".*(B|M)(B|M)"
+
     for i in range(len(tags)):
         if tags[i] == 'S':
             if started:
@@ -183,12 +191,13 @@ class HMMSegger:
             for state1 in STATES:
                 items = []
                 for state2 in STATES:
-                    if tab[t - 1][state2] > 0:
-                        prob = tab[t - 1][state2] * trans_mat[state2].get(state1, 0) * emit_mat[state1].get(sentence[t], 0)
-                        items.append((prob, state2))
-                (prob, state) = max(items)
-                tab[t][state1] = prob
-                new_path[state1] = path[state] + [state1]
+                    if tab[t - 1][state2] == 0:
+                        continue
+                    prob = tab[t - 1][state2] * trans_mat[state2].get(state1, 0) * emit_mat[state1].get(sentence[t], 0)
+                    items.append((prob, state2))
+                best = max(items)  # best: (prob, state)
+                tab[t][state1] = best[0]
+                new_path[state1] = path[best[1]] + [state1]
             path = new_path
 
         # search best path
@@ -201,6 +210,7 @@ class HMMSegger:
 
     def test(self):
         cases = [
+            "我来到北京清华大学",
             "长春市长春节讲话",
             "我们去野生动物园玩",
             "我只是做了一些微小的工作",
