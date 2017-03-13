@@ -1,5 +1,6 @@
 # encoding=utf-8
 from segment import cut, hmm_cut, dict_cut
+from config import data_path
 
 
 def test():
@@ -16,6 +17,18 @@ def test():
         for word in result:
             print(word)
         print('')
+
+
+def cut_text():
+    fw = open(data_path("trisolars.my.txt"), "w", encoding="utf-8")
+    with open(data_path("trisolars.raw.txt"), "r", encoding="utf-8") as f:
+        for line in f:
+            r = cut(line)
+            s = ""
+            for w in r:
+                s += w + ' '
+            fw.write(s)
+
 
 if __name__ == '__main__':
     test()

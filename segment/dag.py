@@ -122,10 +122,22 @@ class DAGSegger:
             print('')
 
 
-if __name__ == '__main__':
+def test():
     s = DAGSegger()
+    s.load()
     # s.load_data("trisolars.txt")
     # s.update()
     # s.save("trisolars.words.txt")
-    s.load()
     s.test()
+
+def cut_text():
+    s = DAGSegger()
+    s.load()
+    with open(data_path("trisolars.raw.txt"), "r", encoding="utf-8") as f:
+        for line in f:
+            r = s.cut(line)
+            print(r)
+
+
+if __name__ == '__main__':
+    cut_text()
