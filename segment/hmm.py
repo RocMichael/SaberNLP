@@ -63,9 +63,7 @@ class HMMSegger:
         self.emit_mat = {}  # emit_mat[status][observe] = int
         self.init_vec = {}  # init_vec[status] = int
         self.state_count = {}  # state_count[status] = int
-        self.word_set = set()
         self.inited = False
-        self.line_num = 0
         self.data = None
 
     def setup(self):
@@ -80,8 +78,6 @@ class HMMSegger:
             self.init_vec[state] = 0
             # build state_count
             self.state_count[state] = 0
-        self.word_set = set()
-        self.line_num = 0
         self.inited = True
 
     def load_data(self, filename):
@@ -124,7 +120,6 @@ class HMMSegger:
             line = line.strip()
             if not line:
                 continue
-            self.line_num += 1
 
             # update word_set
             word_list = []
@@ -132,7 +127,6 @@ class HMMSegger:
                 if line[i] == " ":
                     continue
                 word_list.append(line[i])
-            self.word_set = self.word_set | set(word_list)
 
             # get tags
             words = line.split(" ")  # spilt word by whitespace
@@ -205,8 +199,11 @@ class HMMSegger:
         return path[state]
 
     def cut(self, sentence):
-        tags = self.predict(sentence)
-        return cut_sent(sentence, tags)
+        try:
+            tags = self.predict(sentence)
+            return cut_sent(sentence, tags)
+        except:
+            return sentence
 
     def test(self):
         cases = [
