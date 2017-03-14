@@ -6,8 +6,8 @@ from segment.hmm import HMMSegger
 dag_segger = DAGSegger()
 hmm_segger = HMMSegger()
 
-dag_segger.load()
-hmm_segger.load()
+dag_segger.load(filename="words.txt")
+hmm_segger.load(filename="segger.hmm.json")
 
 
 def __get_single_end(word_list):

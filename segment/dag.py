@@ -130,6 +130,7 @@ def test():
     # s.save("trisolars.words.txt")
     s.test()
 
+
 def cut_text():
     s = DAGSegger()
     s.load()

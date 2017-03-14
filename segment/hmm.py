@@ -118,9 +118,9 @@ class HMMSegger(HMModel):
 
 if __name__ == '__main__':
     segger = HMMSegger()
-    segger.load_data("people_daily.txt")
-    segger.train()
-    # segger.save()
-    # segger.load()
+    # segger.load_data("people_daily.txt")
+    # segger.train()
+    # segger.save(filename="segger.hmm.json")
+    segger.load(filename="segger.hmm.json")
     segger.test()
 

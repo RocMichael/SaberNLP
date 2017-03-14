@@ -11,7 +11,6 @@ class HMModel:
         self.emit_mat = {}  # emit_mat[status][observe] = int
         self.init_vec = {}  # init_vec[status] = int
         self.state_count = {}  # state_count[status] = int
-        self.line_num = 0
         self.states = {}
         self.inited = False
 
@@ -30,9 +29,9 @@ class HMModel:
         self.line_num = 0
         self.inited = True
 
-    def save(self, filename="hmm.json", code="json"):
+    def save(self, filename="hmm.json", code='json'):
         filename = data_path(filename)
-        fw = open(filename, 'w')
+        fw = open(filename, 'w', encoding='utf-8')
         data = {
             "trans_mat": self.trans_mat,
             "emit_mat": self.emit_mat,
@@ -41,13 +40,14 @@ class HMModel:
         }
         if code == "json":
             txt = json.dumps(data)
+            txt = txt.encode('utf-8').decode('unicode-escape')
             fw.write(txt)
         elif code == "pickle":
             pickle.dump(data, fw)
 
     def load(self, filename="hmm.json", code="json"):
         filename = data_path(filename)
-        fr = open(filename, 'r')
+        fr = open(filename, 'r', encoding='utf-8')
         if code == "json":
             txt = fr.read()
             model = json.loads(txt)
@@ -64,14 +64,12 @@ class HMModel:
             self.setup()
 
         for i in range(len(states)):
-            if self.line_num == 0:
+            if i == 0:
                 self.init_vec[states[0]] += 1
                 self.state_count[states[0]] += 1
-                self.line_num += 1
             else:
                 self.trans_mat[states[i - 1]][states[i]] += 1
                 self.state_count[states[i]] += 1
-                self.line_num += 1
                 if observes[i] not in self.emit_mat[states[i]]:
                     self.emit_mat[states[i]][observes[i]] = 1
                 else:
@@ -81,19 +79,29 @@ class HMModel:
         init_vec = {}
         trans_mat = {}
         emit_mat = {}
+        default = max(self.state_count.values())
         # convert init_vec to prob
         for key in self.init_vec:
-            init_vec[key] = float(self.init_vec[key]) / self.state_count[key]
+            if self.state_count[key] != 0:
+                init_vec[key] = float(self.init_vec[key]) / self.state_count[key]
+            else:
+                init_vec[key] = float(self.init_vec[key]) / default
         # convert trans_mat to prob
         for key1 in self.trans_mat:
             trans_mat[key1] = {}
             for key2 in self.trans_mat[key1]:
-                trans_mat[key1][key2] = float(self.trans_mat[key1][key2]) / self.state_count[key1]
+                if self.state_count[key1] != 0:
+                    trans_mat[key1][key2] = float(self.trans_mat[key1][key2]) / self.state_count[key1]
+                else:
+                    trans_mat[key1][key2] = float(self.trans_mat[key1][key2]) / default
         # convert emit_mat to prob
         for key1 in self.emit_mat:
             emit_mat[key1] = {}
             for key2 in self.emit_mat[key1]:
-                emit_mat[key1][key2] = float(self.emit_mat[key1][key2]) / self.state_count[key1]
+                if self.state_count[key1] != 0:
+                    emit_mat[key1][key2] = float(self.emit_mat[key1][key2]) / self.state_count[key1]
+                else:
+                    emit_mat[key1][key2] = float(self.emit_mat[key1][key2]) / default
         return init_vec, trans_mat, emit_mat
 
     def do_predict(self, sequence):
