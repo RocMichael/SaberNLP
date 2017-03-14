@@ -89,6 +89,12 @@ class HMMTagger(HMModel):
             # resume train
             self.do_train(observes, states)
 
+        # special method for this dataset
+        avg = float(sum(self.init_vec.values())) / len(self.init_vec)
+        for key in self.init_vec:
+            if self.init_vec[key] == 0:
+                self.init_vec[key] = avg
+
     def tag(self, sentence):
         try:
             words = cut(sentence)
@@ -99,9 +105,9 @@ class HMMTagger(HMModel):
 
 if __name__ == '__main__':
     t = HMMTagger()
-    # t.load_data("tags.txt")
-    # t.train()
-    # t.save(filename="tagger.hmm.json")
-    t.load(filename="tagger.hmm.json")
+    t.load_data("tags.txt")
+    t.train()
+    t.save(filename="tagger.hmm.json")
+    # t.load(filename="tagger.hmm.json")
     r = t.tag("给你们传授一点人生的经验")
     print(r)

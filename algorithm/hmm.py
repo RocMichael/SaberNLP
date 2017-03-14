@@ -4,6 +4,8 @@ from config import data_path
 import pickle
 import json
 
+EPS = 0.0001
+
 
 class HMModel:
     def __init__(self):
@@ -79,7 +81,7 @@ class HMModel:
         init_vec = {}
         trans_mat = {}
         emit_mat = {}
-        default = max(self.state_count.values())
+        default = max(self.state_count.values())  # avoid ZeroDivisionError
         # convert init_vec to prob
         for key in self.init_vec:
             if self.state_count[key] != 0:
@@ -111,7 +113,7 @@ class HMModel:
 
         # init
         for state in self.states:
-            tab[0][state] = init_vec[state] * emit_mat[state].get(sequence[0], 0)
+            tab[0][state] = init_vec[state] * emit_mat[state].get(sequence[0], EPS)
             path[state] = [state]
 
         # build dynamic search table
@@ -123,7 +125,7 @@ class HMModel:
                 for state2 in self.states:
                     if tab[t - 1][state2] == 0:
                         continue
-                    prob = tab[t - 1][state2] * trans_mat[state2].get(state1, 0) * emit_mat[state1].get(sequence[t], 0)
+                    prob = tab[t - 1][state2] * trans_mat[state2].get(state1, EPS) * emit_mat[state1].get(sequence[t], EPS)
                     items.append((prob, state2))
                 best = max(items)  # best: (prob, state)
                 tab[t][state1] = best[0]
