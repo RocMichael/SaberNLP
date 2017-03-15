@@ -1,6 +1,5 @@
 # encoding=utf-8
 from config import data_path
-from stop_words import stop_words
 
 from algorithm.hmm import HMModel
 from segment import cut

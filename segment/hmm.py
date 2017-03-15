@@ -1,5 +1,5 @@
 # encoding=utf-8
-from config import data_path
+
 from stop_words import stop_words
 from algorithm.hmm import HMModel
 
@@ -65,7 +65,7 @@ class HMMSegger(HMModel):
         self.data = None
 
     def load_data(self, filename):
-        self.data = open(data_path(filename), 'r', encoding="utf-8")
+        self.data = open(filename, 'r', encoding="utf-8")
 
     def train(self):
         if not self.inited:
@@ -116,11 +116,4 @@ class HMMSegger(HMModel):
                 print(word)
             print('')
 
-if __name__ == '__main__':
-    segger = HMMSegger()
-    # segger.load_data("people_daily.txt")
-    # segger.train()
-    # segger.save(filename="segger.hmm.json")
-    segger.load(filename="segger.hmm.json")
-    segger.test()
 

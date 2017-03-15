@@ -1,6 +1,4 @@
 # encoding=utf-8
-from config import data_path
-
 import pickle
 import json
 
@@ -32,7 +30,6 @@ class HMModel:
         self.inited = True
 
     def save(self, filename="hmm.json", code='json'):
-        filename = data_path(filename)
         fw = open(filename, 'w', encoding='utf-8')
         data = {
             "trans_mat": self.trans_mat,
@@ -48,7 +45,6 @@ class HMModel:
             pickle.dump(data, fw)
 
     def load(self, filename="hmm.json", code="json"):
-        filename = data_path(filename)
         fr = open(filename, 'r', encoding='utf-8')
         if code == "json":
             txt = fr.read()

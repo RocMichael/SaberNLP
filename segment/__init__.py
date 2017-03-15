@@ -2,12 +2,13 @@
 from segment.dag import DAGSegger
 from segment.hmm import HMMSegger
 
+from config import data_path
 
 dag_segger = DAGSegger()
 hmm_segger = HMMSegger()
 
-dag_segger.load(filename="words.txt")
-hmm_segger.load(filename="segger.hmm.json")
+dag_segger.load(filename=data_path("words.txt"))
+hmm_segger.load(filename=data_path("segger.hmm.json"))
 
 
 def __get_single_end(word_list):

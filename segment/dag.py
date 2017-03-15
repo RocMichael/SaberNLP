@@ -12,7 +12,7 @@ class DAGSegger:
         self.data = None
 
     def load_data(self, filename):
-        self.data = open(data_path(filename), "r", encoding="utf-8")
+        self.data = open(filename, "r", encoding="utf-8")
 
     def update(self):
         # build word_dict
@@ -27,7 +27,6 @@ class DAGSegger:
                     self.word_dict[word] = 1
 
     def save(self, filename="words.txt", code="txt"):
-        filename = data_path(filename)
         fw = open(filename, 'w', encoding="utf-8")
         data = {
             "word_dict": self.word_dict
@@ -45,7 +44,6 @@ class DAGSegger:
                 fw.write(tmp)
 
     def load(self, filename="words.txt", code="txt"):
-        filename = data_path(filename)
         fr = open(filename, 'rb')
 
         # load model
@@ -120,25 +118,3 @@ class DAGSegger:
             for word in result:
                 print(word)
             print('')
-
-
-def test():
-    s = DAGSegger()
-    s.load()
-    # s.load_data("trisolars.txt")
-    # s.update()
-    # s.save("trisolars.words.txt")
-    s.test()
-
-
-def cut_text():
-    s = DAGSegger()
-    s.load()
-    with open(data_path("trisolars.raw.txt"), "r", encoding="utf-8") as f:
-        for line in f:
-            r = s.cut(line)
-            print(r)
-
-
-if __name__ == '__main__':
-    cut_text()
