@@ -2,10 +2,9 @@
 import jieba
 
 from config import data_path
-from segment.stop_words import stop_words
 
 
-def single(input, output):
+def clean_line(input, output):
     input = data_path(input)
     fr = open(input, 'r')
     output = data_path(output)
@@ -17,7 +16,6 @@ def single(input, output):
         if len(item) < 2:
             continue
 
-        # distinct
         if len(item[0]) > 2 * 3:
             out_str = "%s %d\n" % (item[0], int(item[1]))
             fw.write(out_str)
@@ -38,9 +36,9 @@ def trim(line):
 
 
 def cut(input, output):
-    input = data_path(input)
+    input = data_path(input, data_dir='tmp')
     fr = open(input, 'r')
-    output = data_path(output)
+    output = data_path(output, data_dir='tmp')
     fw = open(output, 'w')
 
     for line in fr:
@@ -57,20 +55,50 @@ def cut(input, output):
     fr.close()
 
 
-def build(input, output):
-    input = data_path(input)
+def build_set(input, output):
+    input = data_path(input, data_dir="tmp")
     fr = open(input, 'r', encoding='utf-8')
-    ouput = data_path(output)
-    fw = open(output, 'w', encoding='utf-8')
+    ouput = data_path(output, data_dir="tmp")
+    fw = open(output, 'a', encoding='utf-8')
 
-    word_set = set()
+    word_set = {}
 
     for line in fr:
         line = line.strip()
-        word_set.add(line)
+        word_set[line] = 9999
 
     txt = str(word_set)
     txt = txt.replace(',', ',\n')
     fw.write(txt)
 
-build("phrase.txt", "tmp.txt")
+
+def build_list(input, output):
+    input = data_path(input, data_dir="tmp")
+    fr = open(input, 'r', encoding='utf-8')
+    ouput = data_path(output, data_dir="tmp")
+    fw = open(output, 'w', encoding='utf-8')
+
+    for line in fr:
+        line = line.strip()
+        txt = line + ' 9999\n'
+        fw.write(txt)
+
+
+def distinct(input, output):
+    input = data_path(input, data_dir="tmp")
+    fr = open(input, 'r', encoding='utf-8')
+    ouput = data_path(output, data_dir="tmp")
+    fw = open(output, 'w', encoding='utf-8')
+
+    word_dict = {}
+    for line in fr:
+        tmp = line.split(" ")
+        if len(tmp) < 2:
+            continue
+        word_dict[tmp[0]] = int(tmp[1])
+
+    for key in word_dict:
+        tmp = "%s %d\n" % (key, word_dict[key])
+        fw.write(tmp)
+
+distinct("words.txt", "tmp.txt")

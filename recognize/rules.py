@@ -1,5 +1,7 @@
 from config import data_path
 
+import re
+
 
 def build(filename):
     fr = open(filename, 'r', encoding='utf-8')
@@ -14,6 +16,7 @@ def build(filename):
 DEFAULT = {
     '我': 'pronoun',
     '我们': 'pronoun',
+    '你': 'pronoun',
     '你们': 'pronoun',
     '给': 'verb',
     '春节': 'noun',
@@ -22,6 +25,8 @@ DEFAULT = {
     '只是': 'adv',
     '忠诚': 'noun',
     '可能': 'adv',
+    '国庆节': 'noun',
+    '比起': 'conj'
 }
 
 PUNCT = {
@@ -70,7 +75,15 @@ def filter_phrase(word, tag):
         return 'phrase'
     return tag
 
-FILTERS = [filter_punct, filter_location, filter_phrase]
+
+def filter_default(word, tag):
+    if tag in {'other', 'exclam'}:
+        if word in DEFAULT:
+            return DEFAULT[word]
+    return tag
+
+
+FILTERS = [filter_punct, filter_location, filter_phrase, filter_default]
 
 
 def main_filter(words, tags, filters=FILTERS):

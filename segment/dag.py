@@ -44,7 +44,7 @@ class DAGSegger:
                 fw.write(tmp)
 
     def load(self, filename="words.txt", code="txt"):
-        fr = open(filename, 'rb')
+        fr = open(filename, 'r', encoding='utf-8')
 
         # load model
         model = {}
@@ -55,7 +55,6 @@ class DAGSegger:
         elif code == 'txt':
             word_dict = {}
             for line in fr:
-                line = line.decode("utf-8")
                 tmp = line.split(" ")
                 if len(tmp) < 2:
                     continue
@@ -65,11 +64,10 @@ class DAGSegger:
         # update word dict
         word_dict = model["word_dict"]
         for key in word_dict:
-            key2 = key  # to unicode
             if self.word_dict.get(key):
-                self.word_dict[key2] += word_dict[key]
+                self.word_dict[key] += word_dict[key]
             else:
-                self.word_dict[key2] = word_dict[key]
+                self.word_dict[key] = word_dict[key]
 
     def build_dag(self, sentence):
         dag = {}

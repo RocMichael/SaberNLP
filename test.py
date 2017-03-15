@@ -7,7 +7,7 @@ from recognize import tag
 
 def test_seg():
     cases = [
-        "给你们传授一点人生的经验"
+        "给你们传授一点人生的经验",
         "我来到北京清华大学",
         "长春市长春节讲话",
         "我们在野生动物园玩",
@@ -49,4 +49,4 @@ def cut_text():
 
 
 if __name__ == '__main__':
-    test_tag()
+    test_seg()
