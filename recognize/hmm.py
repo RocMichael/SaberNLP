@@ -39,15 +39,6 @@ STATES = {
 }
 
 
-def build_list(words, tags):
-    if len(words) != len(tags):
-        return None
-    result = []
-    for i in range(len(words)):
-        result.append((words[i], STATES[tags[i]]))
-    return result
-
-
 class HMMTagger(HMModel):
     def __init__(self, *args, **kwargs):
         super(HMMTagger, self).__init__(*args, **kwargs)
@@ -94,19 +85,11 @@ class HMMTagger(HMModel):
             if self.init_vec[key] == 0:
                 self.init_vec[key] = avg
 
-    def tag(self, sentence):
+    def tag(self, words):
         try:
-            words = cut(sentence)
             tags = self.do_predict(words)
-            return build_list(words, tags)
+            return list(map(lambda key: STATES[key], tags))
         except:
-            return sentence
+            return list(map(lambda key: STATES['X'], tags))
 
-if __name__ == '__main__':
-    t = HMMTagger()
-    t.load_data("tags.txt")
-    t.train()
-    t.save(filename="tagger.hmm.json")
-    # t.load(filename="tagger.hmm.json")
-    r = t.tag("给你们传授一点人生的经验")
-    print(r)
+

@@ -1,3 +1,6 @@
+from config import data_path
+
+
 def build(filename):
     fr = open(filename, 'r', encoding='utf-8')
 
@@ -39,10 +42,10 @@ PUNCT = {
     "──",
 }
 
-PHRASE = build("phrase.txt")
+PHRASE = build(data_path("phrase.txt"))
 
 
-LOCATION = build("location.txt")
+LOCATION = build(data_path("location.txt"))
 
 
 def filter_punct(word, tag):
@@ -75,6 +78,7 @@ def main_filter(words, tags, filters=FILTERS):
         return tags
     for i in range(len(words)):
         word = words[i]
+        tag = tags[i]
         for the_filter in filters:
             tag = the_filter(word, tag)
         tags[i] = tag

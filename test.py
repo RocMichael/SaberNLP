@@ -49,4 +49,4 @@ def cut_text():
 
 
 if __name__ == '__main__':
-    test_seg()
+    test_tag()
