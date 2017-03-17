@@ -2,7 +2,11 @@ from recognize.hmm import HMMTagger
 from recognize.rules import main_filter
 from segment import cut
 
-from config import data_path
+import os
+
+
+def data_path(filename):
+    return os.path.join(os.path.dirname(__file__), "%s" % filename)
 
 
 hmm_tagger = HMMTagger()

@@ -6,4 +6,4 @@ del(sys)
 del(os)
 
 from segment import cut, dict_cut, hmm_cut
-from recognize import tag
+from.recognize import tag

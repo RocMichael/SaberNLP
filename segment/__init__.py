@@ -2,7 +2,11 @@
 from segment.dag import DAGSegger
 from segment.hmm import HMMSegger
 
-from config import data_path
+import os
+
+
+def data_path(filename):
+    return os.path.join(os.path.dirname(__file__), "%s" % filename)
 
 dag_segger = DAGSegger()
 hmm_segger = HMMSegger()
