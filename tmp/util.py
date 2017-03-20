@@ -1,7 +1,14 @@
 # encoding=utf-8
+import csv
 import jieba
+import os
 
-from config import data_path
+
+def data_path(filename):
+    return os.path.join(os.path.dirname(__file__), "%s" % filename)
+
+
+stop_words = {}
 
 
 def clean_line(input, output):
@@ -36,9 +43,9 @@ def trim(line):
 
 
 def cut(input, output):
-    input = data_path(input, data_dir='tmp')
+    input = data_path(input)
     fr = open(input, 'r')
-    output = data_path(output, data_dir='tmp')
+    output = data_path(output)
     fw = open(output, 'w')
 
     for line in fr:
@@ -85,9 +92,9 @@ def build_list(input, output):
 
 
 def distinct(input, output):
-    input = data_path(input, data_dir="tmp")
+    input = data_path(input)
     fr = open(input, 'r', encoding='utf-8')
-    ouput = data_path(output, data_dir="tmp")
+    ouput = data_path(output)
     fw = open(output, 'w', encoding='utf-8')
 
     word_dict = {}
@@ -101,4 +108,20 @@ def distinct(input, output):
         tmp = "%s %d\n" % (key, word_dict[key])
         fw.write(tmp)
 
-distinct("words.txt", "tmp.txt")
+
+def csv_to_txt(output):
+    output = data_path(output)
+    fw = open(output, 'a', encoding='utf-8')
+    files = os.listdir(data_path('comments'))
+
+    for f in files:
+        f = data_path('comments/' + f)
+        fr = open(f, 'r', encoding='gbk')
+
+        f_csv = csv.reader(fr)
+        headers = next(f_csv)
+        for row in f_csv:
+            fw.write(row[1] + '\n')
+
+
+csv_to_txt("comments.txt")

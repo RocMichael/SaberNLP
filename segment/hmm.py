@@ -1,7 +1,7 @@
 # encoding=utf-8
 
 from algorithm.hmm import HMModel
-from segment.stop_words import stop_words
+from segment.extra import seg_stop_words
 
 STATES = {'B', 'M', 'E', 'S'}
 
@@ -86,7 +86,7 @@ class HMMSegger(HMModel):
             words = line.split(" ")  # spilt word by whitespace
             states = []
             for word in words:
-                if word in stop_words:
+                if word in seg_stop_words:
                     continue
                 states.extend(get_tags(word))
 

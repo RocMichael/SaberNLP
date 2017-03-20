@@ -1,7 +1,8 @@
 # encoding=utf-8
 from segment.dag import DAGSegger
 from segment.hmm import HMMSegger
-from segment.stop_words import stop_words
+
+from segment.extra import seg_stop_words, abstract_stop_words
 
 import os
 
@@ -12,7 +13,7 @@ def data_path(filename):
 dag_segger = DAGSegger()
 hmm_segger = HMMSegger()
 
-dag_segger.stop_words = stop_words
+dag_segger.stop_words = seg_stop_words
 dag_segger.load(filename=data_path("words.txt"))
 hmm_segger.load(filename=data_path("segger.hmm.json"))
 
@@ -67,3 +68,21 @@ def hmm_cut(sentence):
 
 cut = joint_cut
 
+
+from segment.tf_idf import TF_IDF
+
+
+idf_abstracter = TF_IDF()
+idf_abstracter.stop_words = abstract_stop_words
+idf_abstracter.load(filename=data_path("words.txt"))
+idf_abstracter.build_word_count()
+
+
+def get_abstract(txt):
+    tmp = ""
+    for c in txt:
+        if c in abstract_stop_words:
+            continue
+        tmp += c
+    words = cut(tmp)
+    return idf_abstracter.get_key_words(words)
