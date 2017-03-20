@@ -1,6 +1,7 @@
 # encoding=utf-8
 from segment.dag import DAGSegger
 from segment.hmm import HMMSegger
+from segment.stop_words import stop_words
 
 import os
 
@@ -11,6 +12,7 @@ def data_path(filename):
 dag_segger = DAGSegger()
 hmm_segger = HMMSegger()
 
+dag_segger.stop_words = stop_words
 dag_segger.load(filename=data_path("words.txt"))
 hmm_segger.load(filename=data_path("segger.hmm.json"))
 

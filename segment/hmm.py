@@ -1,10 +1,7 @@
 # encoding=utf-8
 
-from stop_words import stop_words
 from algorithm.hmm import HMModel
-
-import pickle
-import json
+from segment.stop_words import stop_words
 
 STATES = {'B', 'M', 'E', 'S'}
 
