@@ -26,7 +26,6 @@ class HMModel:
             self.init_vec[state] = 0
             # build state_count
             self.state_count[state] = 0
-        self.line_num = 0
         self.inited = True
 
     def save(self, filename="hmm.json", code='json'):
@@ -43,6 +42,7 @@ class HMModel:
             fw.write(txt)
         elif code == "pickle":
             pickle.dump(data, fw)
+        fw.close()
 
     def load(self, filename="hmm.json", code="json"):
         fr = open(filename, 'r', encoding='utf-8')
@@ -56,6 +56,7 @@ class HMModel:
         self.init_vec = model["init_vec"]
         self.state_count = model["state_count"]
         self.inited = True
+        fr.close()
 
     def do_train(self, observes, states):
         if not self.inited:

@@ -39,6 +39,7 @@ class WordDictModel:
             for key in self.word_dict:
                 tmp = "%s %d\n" % (key, self.word_dict[key])
                 fw.write(tmp)
+        fw.close()
 
     def load(self, filename="words.txt", code="txt"):
         fr = open(filename, 'r', encoding='utf-8')
@@ -57,6 +58,7 @@ class WordDictModel:
                     continue
                 word_dict[tmp[0]] = int(tmp[1])
             model = {"word_dict": word_dict}
+        fr.close()
 
         # update word dict
         word_dict = model["word_dict"]
