@@ -16,7 +16,7 @@ def data_path(filename):
 
 def test_seg():
     cases = [
-        "你们传授",
+        "给你们传授一点人生的经验",
         "我来到北京清华大学",
         "长春市长春节讲话",
         "我们在野生动物园玩",
@@ -68,6 +68,6 @@ def test_abstract():
 
 if __name__ == '__main__':
     # test_tag()
-    test_seg()
-    # test_abstract()
+    # test_seg()
+    test_abstract()
     # text_seg()
