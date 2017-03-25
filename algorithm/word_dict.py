@@ -40,6 +40,7 @@ class WordDictModel:
                 tmp = "%s %d\n" % (key, self.word_dict[key])
                 fw.write(tmp)
 
+
     def load(self, filename="words.txt", code="txt"):
         fr = open(filename, 'r', encoding='utf-8')
 
