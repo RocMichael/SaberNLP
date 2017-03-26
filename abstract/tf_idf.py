@@ -1,6 +1,6 @@
 from algorithm.word_dict import WordDictModel
 import math
-from segment.extra import abstract_stop_words as stop_words
+from .extra import abstract_stop_words as stop_words
 
 
 class TF_IDF(WordDictModel):

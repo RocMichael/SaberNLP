@@ -2,7 +2,7 @@
 
 from recognize import tag
 from segment import cut, hmm_cut, dict_cut, dag_segger
-from segment import get_abstract
+from abstract import get_abstract
 
 
 import os
