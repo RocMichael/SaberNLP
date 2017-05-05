@@ -3,7 +3,7 @@
 from recognize import tag
 from segment import cut, hmm_cut, dict_cut, dag_segger
 from abstract import get_abstract
-
+from word2vec import Word2Vec
 
 import os
 
@@ -56,6 +56,16 @@ def test_abstract():
             case += line
 
 
+def test_word2vec():
+    data = [
+        'Merge multiple sorted inputs into a single sorted output',
+        'The API below differs from textbook heap algorithms in two aspects'
+    ]
+    wv = Word2Vec(vec_len=50)
+    wv.train(data, model='cbow')
+    print(wv['into'])
+
+
 def test():
     print("test seg:")
     test_seg()
@@ -65,6 +75,9 @@ def test():
     print("==========")
     print("test abstract:")
     test_abstract()
+    print("==========")
+    print("test word2vec:")
+    test_word2vec()
     print("==========")
 
 

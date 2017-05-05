@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
+# encoding=utf-8
 
 import math
 from sklearn import preprocessing
-import numpy as np
 
-from Word2Vec.huffman import *
-from Word2Vec.counter import *
+from word2vec.huffman import *
+from word2vec.counter import *
 
 
 def sigmoid(value):
@@ -125,15 +124,6 @@ class Word2Vec:
         return error
 
     def __getitem__(self, word):
-        if not word in self.word_dict:
+        if word not in self.word_dict:
             return None
         return self.word_dict[word]['vector']
-
-if __name__ == '__main__':
-    data = [
-        'Merge multiple sorted inputs into a single sorted output',
-        'The API below differs from textbook heap algorithms in two aspects'
-    ]
-    wv = Word2Vec(vec_len=50)
-    wv.train(data, model='cbow')
-    print(wv['into'])
